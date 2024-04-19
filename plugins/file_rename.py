@@ -96,34 +96,29 @@ async def doc(bot, update):
     ms = await update.message.edit("⚠️ __**Please wait...**__\n\n**Tʀyɪɴɢ Tᴏ Dᴏᴡɴʟᴏᴀᴅɪɴɢ....**")
     try:
         path = await bot.download_media(message=file, file_name=file_path, progress=progress_for_pyrogram, progress_args=("\n⚠️ __**Please wait...**__\n\n❄️ **Dᴏᴡɴʟᴏᴀᴅ Sᴛᴀʀᴛᴇᴅ....**", ms, time.time()))
+        # Adding metadata using ffmpeg
+        metadata = {
+            'title': 'Encoded by @CinemaVenoOfficial',
+            'author': '@CinemaVenoOfficial',
+            'artist': '@CinemaVenoOfficial',
+            'audio': '@CinemaVenoOfficial',
+            'subtitle': '@CinemaVenoOfficial',
+            'video': '@CinemaVenoOfficial'
+        }
+        metadata_path = f"{Config.DOWN_PATH}/{new_filename}.metadata"
+        cmd = f"""ffmpeg -i "{path}" -metadata title="{metadata['title']}" -metadata author="{metadata['author']}" -metadata artist="{metadata['artist']}" -metadata audio="{metadata['audio']}" -metadata subtitle="{metadata['subtitle']}" -metadata video="{metadata['video']}" "{path}" """
+        process = await asyncio.create_subprocess_shell(
+            cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+        stdout, stderr = await process.communicate()
+        er = stderr.decode()
+        if er:
+            return await ms.edit(str(er) + "\n\n**Error**")
+        await ms.edit("**Metadata added to the file successfully ✅**\n\n⚠️ __**Please wait...**__\n\n**Trying to uploading....**")
     except Exception as e:
         return await ms.edit(e)
-
-    _bool_metadata = await db.get_metadata(update.message.chat.id)
-
-    if (_bool_metadata):
-        metadata_path = f"Metadata/{new_filename}"
-        metadata = await db.get_metadata_code(update.message.chat.id)
-        if metadata:
-
-            await ms.edit("I Fᴏᴜɴᴅ Yᴏᴜʀ Mᴇᴛᴀᴅᴀᴛᴀ\n\n__**Pʟᴇᴀsᴇ Wᴀɪᴛ...**__\n**Aᴅᴅɪɴɢ Mᴇᴛᴀᴅᴀᴛᴀ Tᴏ Fɪʟᴇ....**")
-            cmd = f"""ffmpeg -i "{path}" {metadata} "{metadata_path}" """
-
-            process = await asyncio.create_subprocess_shell(
-                cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-
-            stdout, stderr = await process.communicate()
-            er = stderr.decode()
-
-            try:
-                if er:
-                    return await ms.edit(str(er) + "\n\n**Error**")
-            except BaseException:
-                pass
-        await ms.edit("**Metadata added to the file successfully ✅**\n\n⚠️ __**Please wait...**__\n\n**Tʀyɪɴɢ Tᴏ Uᴩʟᴏᴀᴅɪɴɢ....**")
     else:
-        await ms.edit("⚠️  __**Please wait...**__\n\n**Tʀyɪɴɢ Tᴏ Uᴩʟᴏᴀᴅɪɴɢ....**")
+        await ms.edit("⚠️  __**Please wait...**__\n\n**Trying to uploading....**")
 
     duration = 0
     try:
