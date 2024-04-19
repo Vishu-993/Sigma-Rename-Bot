@@ -106,6 +106,7 @@ async def doc(bot, update):
             'video': '@CinemaVenoOfficial'
         }
         metadata_path = f"Metadata/{new_filename}"
+        await ms.edit("I Fᴏᴜɴᴅ Yᴏᴜʀ Mᴇᴛᴀᴅᴀᴛᴀ\n\n__**Pʟᴇᴀsᴇ Wᴀɪᴛ...**__\n**Aᴅᴅɪɴɢ Mᴇᴛᴀᴅᴀᴛᴀ Tᴏ Fɪʟᴇ....**")
         cmd = f"""ffmpeg -i "{path}" -metadata title="{metadata['title']}" -metadata author="{metadata['author']}" -metadata artist="{metadata['artist']}" -metadata audio="{metadata['audio']}" -metadata subtitle="{metadata['subtitle']}" -metadata video="{metadata['video']}" "{path}" """
         process = await asyncio.create_subprocess_shell(
             cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
